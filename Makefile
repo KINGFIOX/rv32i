@@ -9,8 +9,14 @@ bin: fib.c
 dump: bin
 	riscv32-unknown-linux-gnu-objdump -d fib > fib.dump
 
+gdb:
+	riscv32-unknown-linux-gnu-gcc -march=rv32i fib.s
+	riscv32-unknown-linux-gnu-gdb a.out 
+
 
 clean:
 	rm -f fib
 	rm -f fib.bin
+	rm -f fib.s
 	rm -f fib.dump
+	rm -f a.out

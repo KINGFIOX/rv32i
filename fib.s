@@ -18,7 +18,7 @@ main:
 	.cfi_offset 8, -8
 	addi	s0,sp,16
 	.cfi_def_cfa 8, 0
-	li	a0,10
+	li	a0,4
 	call	fib
 	mv	a5,a0
 	mv	a0,a5

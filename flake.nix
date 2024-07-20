@@ -29,8 +29,8 @@
             ninja
             # utils
             qemu
-            (with pkgsCross.riscv64; [ buildPackages.gcc ])
-            (with pkgsCross.riscv32; [ buildPackages.gcc ])
+            (with pkgsCross.riscv64; [ buildPackages.gcc buildPackages.gdb ])
+            (with pkgsCross.riscv32; [ buildPackages.gcc buildPackages.gdb ])
             yosys
             verible
           ];

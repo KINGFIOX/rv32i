@@ -39,31 +39,31 @@ object Main {
 
     println(s"sp=${cpu.regs(2)}")
 
-    while (true) {
-      // 1. Fetch.
-      val inst = cpu.fetch()
+    while (cpu.step()) {
+      // // 1. Fetch.
+      // val inst = cpu.fetch()
 
-      // Break the loop if an error occurs.
-      if (inst == 0) return
+      // // Break the loop if an error occurs.
+      // if (inst == 0) return
 
-      println(s"========== dump ==========")
+      // println(s"========== dump ==========")
 
-      // 打印当前 pc 的值
-      println(s"cur_pc=${java.lang.Integer.toHexString(cpu.pc)}")
+      // // 打印当前 pc 的值
+      // println(s"cur_pc=${java.lang.Integer.toHexString(cpu.pc)}")
 
-      // 2. Add 4 to the program counter.
-      // 当然, cpu.execute 可能会改掉这个 pc 值
-      cpu.pc += 4
+      // // 2. Add 4 to the program counter.
+      // // 当然, cpu.execute 可能会改掉这个 pc 值
+      // cpu.pc += 4
 
-      // 3. Decode.
-      // 4. Execute.
-      if (cpu.execute(inst) == false) return
+      // // 3. Decode.
+      // // 4. Execute.
+      // if (cpu.execute(inst) == false) return
 
-      // This is a workaround for avoiding an infinite loop.
-      if (cpu.pc == 0) return
+      // // This is a workaround for avoiding an infinite loop.
+      // if (cpu.pc == 0) return
 
-      // 打印执行后的状态
-      cpu.dumpRegisters()
+      // // 打印执行后的状态
+      // cpu.dumpRegisters()
     }
 
   }
