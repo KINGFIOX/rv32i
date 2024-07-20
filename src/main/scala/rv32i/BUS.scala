@@ -1,6 +1,6 @@
 package rv32i
 
-class Bus(code: Array[Byte], val DRAM_BASE: Long, val DRAM_SIZE: Long) {
+class BUS(code: Array[Byte], val DRAM_BASE: Long, val DRAM_SIZE: Long) {
   val dram = new DRAM(code, DRAM_BASE, DRAM_SIZE)
 
   def load(addr: Long, size: Long): Long = {
