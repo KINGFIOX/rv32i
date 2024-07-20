@@ -1,32 +1,33 @@
 package rv32i
 
-class DRAM(code: Array[Byte], val DRAM_BEGIN: Long, val len: Long /* 大小 */ ) {
-  val dram: Array[Byte] = Array.fill(len.toInt)(0)
-  Array.copy(code, 0, dram, 0, code.length) // 初始化内存
+import scala.collection.immutable.BigVector
 
-  def load(addr: Long, size: Long): Long = {
-    val index = (addr - DRAM_BEGIN).toInt // dram 的 index
+class DRAM(code: Array[Byte], val DRAM_BEGIN: Int, val len: Int /* 大小 */ ) {
+  val dram: Array[Byte] = Array.copyOf(code, len)
+
+  def load(addr: Int, size: Int): Int = {
+    val index = (addr - DRAM_BEGIN) // dram 的 index
     size match {
-      case 8 => { dram(index).toLong & 0xff }
-      case 16 => { (dram(index).toLong & 0xff) | ((dram(index + 1).toLong & 0xff) << 8) }
-      case 32 => { (dram(index).toLong & 0xff) | ((dram(index + 1).toLong & 0xff) << 8) | ((dram(index + 2).toLong & 0xff) << 16) | ((dram(index + 3).toLong & 0xff) << 24) }
+      case 8 => { dram(index) & 0x0ff }
+      case 16 => { (dram(index) & 0x0ff) | ((dram(index + 1) & 0x0ff) << 8) }
+      case 32 => { (dram(index) & 0x0ff) | ((dram(index + 1) & 0x0ff) << 8) | ((dram(index + 2) & 0x0ff) << 16) | ((dram(index + 3) & 0x0ff) << 24) }
       case _ => 0
     }
   }
 
-  def store(addr: Long, size: Long, value: Long): Unit = {
-    val index = (addr - DRAM_BEGIN).toInt // dram 的 index
+  def store(addr: Int, size: Int, value: Int): Unit = {
+    val index = addr - DRAM_BEGIN // dram 的 index
     size match {
-      case 8 => { dram(index) = (value & 0xff).toByte }
+      case 8 => { dram(index) = (value & 0x0ff).toByte }
       case 16 => {
-        dram(index)     = (value & 0xff).toByte
-        dram(index + 1) = ((value >> 8) & 0xff).toByte
+        dram(index)     = (value & 0x0ff).toByte
+        dram(index + 1) = ((value >> 8) & 0x0ff).toByte
       }
       case 32 => {
-        dram(index)     = (value & 0xff).toByte
-        dram(index + 1) = ((value >> 8) & 0xff).toByte
-        dram(index + 2) = ((value >> 16) & 0xff).toByte
-        dram(index + 3) = ((value >> 24) & 0xff).toByte
+        dram(index)     = (value & 0x0ff).toByte
+        dram(index + 1) = ((value >> 8) & 0x0ff).toByte
+        dram(index + 2) = ((value >> 16) & 0x0ff).toByte
+        dram(index + 3) = ((value >> 24) & 0x0ff).toByte
       }
       case _ =>
     }

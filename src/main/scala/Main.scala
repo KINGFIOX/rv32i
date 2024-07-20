@@ -7,21 +7,21 @@ import scala.io.Source
 import scala.util.{Try, Using}
 
 object Settings {
-  val DRAM_BEGIN: Long = 0 // 0x0_8000_0000
-  val DRAM_END: Long   = 0x0_ffff_f000L
-  def DRAM_LEN         = DRAM_END - DRAM_BEGIN
+  val DRAM_BEGIN: Int = 0 // 0x0_8000_0000
+  val DRAM_END: Int   = 0x0_0fff_f000
+  def DRAM_LEN        = DRAM_END - DRAM_BEGIN
 
-  val DIG_BEGIN: Long = 0x0_ffff_f000L //
-  val DIG_LEN: Long   = 4
+  val DIG_BEGIN: Int = 0x0_ffff_f000 //
+  val DIG_LEN: Int   = 4
 
-  val LED_BEGIN: Long = 0x0_ffff_f060L
-  val LED_LEN: Long   = 3
+  val LED_BEGIN: Int = 0x0_ffff_f060
+  val LED_LEN: Int   = 3
 
-  val SWITCH_BEGIN: Long = 0x0_ffff_f070L
-  val SWITCH_LEN: Long   = 3
+  val SWITCH_BEGIN: Int = 0x0_ffff_f070
+  val SWITCH_LEN: Int   = 3
 
-  val BTN_BEGIN: Long = 0x0_ffff_f078L
-  val BTN_LEN: Long   = 1
+  val BTN_BEGIN: Int = 0x0_ffff_f078
+  val BTN_LEN: Int   = 1
 }
 
 object Main {
@@ -37,6 +37,8 @@ object Main {
 
     val cpu = new CPU(code)
 
+    println(s"sp=${cpu.regs(2)}")
+
     while (true) {
       // 1. Fetch.
       val inst = cpu.fetch()
@@ -44,7 +46,13 @@ object Main {
       // Break the loop if an error occurs.
       if (inst == 0) return
 
+      println(s"========== dump ==========")
+
+      // 打印当前 pc 的值
+      println(s"cur_pc=${java.lang.Integer.toHexString(cpu.pc)}")
+
       // 2. Add 4 to the program counter.
+      // 当然, cpu.execute 可能会改掉这个 pc 值
       cpu.pc += 4
 
       // 3. Decode.
@@ -53,9 +61,11 @@ object Main {
 
       // This is a workaround for avoiding an infinite loop.
       if (cpu.pc == 0) return
+
+      // 打印执行后的状态
+      cpu.dumpRegisters()
     }
 
-    cpu.dumpRegisters()
   }
 
   def readFile(filename: String): Either[Throwable, Array[Byte]] = {
