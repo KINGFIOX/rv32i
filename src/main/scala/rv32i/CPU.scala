@@ -10,9 +10,9 @@ class CPU(irom: Array[Byte]) {
 
   var pc: Long = 0 // 地址
 
-  regs(2) = Settings.DRAM_BASE + Settings.DRAM_SIZE // 设置 sp 为栈顶(高地址)
+  regs(2) = Settings.DRAM_BEGIN + Settings.DRAM_LEN // 设置 sp 为栈顶(高地址)
 
-  val bus = new BUS(irom, Settings.DRAM_BASE, Settings.DRAM_SIZE)
+  val bus = new BUS(irom)
 
   // 打印所有寄存器的值
   def dumpRegisters(): Unit = {
