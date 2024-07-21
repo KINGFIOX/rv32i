@@ -2,7 +2,7 @@ int fib(int n);
 
 int main()
 {
-    return fib(4);
+    return fib(10);
 }
 
 int fib(int n)

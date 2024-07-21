@@ -39,7 +39,7 @@ object Main {
 
     println(s"sp=${cpu.regs(2)}")
 
-    while (cpu.step()) {
+    while (cpu.step()._1) {
       // // 1. Fetch.
       // val inst = cpu.fetch()
 

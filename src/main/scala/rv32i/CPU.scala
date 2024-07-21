@@ -271,7 +271,7 @@ class CPU(irom: Array[Byte]) {
     true
   }
 
-  def wb_status(inst: Int): (Boolean, String /* 写了哪个寄存器 */, Int /* 写的寄存器的值 */ ) = {
+  def wb_status(inst: Int): (Boolean /* 写使能 */, String /* 写了哪个寄存器 */, Int /* 写的寄存器的值 */ ) = {
     val opcode = inst & 0x7f
     val rd     = (inst >>> 7) & 0x1f
     val rs1    = (inst >>> 15) & 0x1f
