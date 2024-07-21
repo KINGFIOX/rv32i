@@ -334,18 +334,12 @@ class CPU(user: Array[Byte], kernel: Array[Byte]) {
               case 0x18 /* mret */ | 0x08 /* sret */ =>
                 println(s"eret")
             }
-          case 0x1 => // csrrw
-            println(s"csrrw ${abi(rd)}, ${csr_abi(csr_addr)} ,${abi(rs1)}")
-          case 0x2 => // csrrs
-            println(s"csrrs ${abi(rd)}, ${csr_abi(csr_addr)} ,${abi(rs1)}")
-          case 0x3 => // csrrc
-            println(s"csrrc ${abi(rd)}, ${csr_abi(csr_addr)} ,${abi(rs1)}")
-          case 0x5 => // csrrwi
-            println(s"csrrwi ${abi(rd)}, ${csr_abi(csr_addr)} ,${rs1}")
-          case 0x6 => // csrrsi
-            println(s"csrrsi ${abi(rd)}, ${csr_abi(csr_addr)} ,${rs1}")
-          case 0x7 => // csrrci
-            println(s"csrrci ${abi(rd)}, ${csr_abi(csr_addr)} ,${rs1}")
+          case 0x1 => /* csrrw */ println(s"csrrw ${abi(rd)}, ${csr_abi(csr_addr)} ,${abi(rs1)}")
+          case 0x2 => /* csrrs */ println(s"csrrs ${abi(rd)}, ${csr_abi(csr_addr)} ,${abi(rs1)}")
+          case 0x3 => /* csrrc */ println(s"csrrc ${abi(rd)}, ${csr_abi(csr_addr)} ,${abi(rs1)}")
+          case 0x5 => /* csrrwi */ println(s"csrrwi ${abi(rd)}, ${csr_abi(csr_addr)} ,${rs1}")
+          case 0x6 => /* csrrsi */ println(s"csrrsi ${abi(rd)}, ${csr_abi(csr_addr)} ,${rs1}")
+          case 0x7 => /* csrrci */ println(s"csrrci ${abi(rd)}, ${csr_abi(csr_addr)} ,${rs1}")
           case _ => return false
         }
       case _ =>

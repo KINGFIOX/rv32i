@@ -8,9 +8,11 @@ sbt run
 [info] loading settings for project rvemu-build from metals.sbt ...
 [info] loading project definition from /home/wangfiox/Documents/rvemu/project
 [success] Generated .bloop/rvemu-build.json
-[success] Total time: 2 s, completed Jul 21, 2024, 3:45:52 PM
+[success] Total time: 2 s, completed Jul 21, 2024, 3:56:59 PM
 [info] loading settings for project root from build.sbt ...
 [info] set current project to untitled (in build file:/home/wangfiox/Documents/rvemu/)
+[info] compiling 1 Scala source to /home/wangfiox/Documents/rvemu/target/scala-2.13/classes ...
+[info] done compiling
 [info] running emu.Main 
 sp=65536
 ========== 0 ==========
@@ -40624,7 +40626,7 @@ s4=0	s5=0	s6=0	s7=0
 s8=0	s9=0	s10=0	s11=0	
 t3=0	t4=0	t5=0	t6=0	
 ========== 1c090000 ==========
-csrrwi zero, mstatus ,0, 
+csrrwi zero, mstatus ,0
 zero=0	ra=24	sp=65504	gp=0	
 tp=0	t0=0	t1=0	t2=0	
 s0=65536	s1=0	a0=55	a1=0	
@@ -40734,7 +40736,7 @@ s4=0	s5=0	s6=0	s7=0
 s8=0	s9=0	s10=0	s11=0	
 t3=0	t4=0	t5=0	t6=0	
 ========== 1c09002c ==========
-csrrwi t2, mcause ,0, 
+csrrwi t2, mcause ,0
 zero=0	ra=24	sp=65480	gp=0	
 tp=0	t0=11	t1=-2147483637	t2=11	
 s0=65536	s1=0	a0=55	a1=0	
@@ -40864,7 +40866,7 @@ s4=0	s5=0	s6=0	s7=0
 s8=0	s9=0	s10=0	s11=0	
 t3=0	t4=0	t5=0	t6=0	
 ========== 1c0900bc ==========
-csrrwi zero, mstatus ,8, 
+csrrwi zero, mstatus ,8
 zero=0	ra=24	sp=65504	gp=0	
 tp=0	t0=0	t1=0	t2=0	
 s0=65536	s1=0	a0=55	a1=0	
@@ -40935,4 +40937,4 @@ s8=0	s9=0	s10=0	s11=0
 t3=0	t4=0	t5=0	t6=0	
 ========== 34 ==========
 jalr zero, ra, 0
-[success] Total time: 1 s, completed Jul 21, 2024, 3:45:53 PM
+[success] Total time: 5 s, completed Jul 21, 2024, 3:57:04 PM
