@@ -20,40 +20,49 @@ class CPU(user: Array[Byte], kernel: Array[Byte]) {
 
   /* ---------- 方法 ---------- */
 
-  val abi = Seq(
-    "zero",
-    "ra",
-    "sp",
-    "gp",
-    "tp",
-    "t0",
-    "t1",
-    "t2",
-    "s0",
-    "s1",
-    "a0",
-    "a1",
-    "a2",
-    "a3",
-    "a4",
-    "a5",
-    "a6",
-    "a7",
-    "s2",
-    "s3",
-    "s4",
-    "s5",
-    "s6",
-    "s7",
-    "s8",
-    "s9",
-    "s10",
-    "s11",
-    "t3",
-    "t4",
-    "t5",
-    "t6"
-  )
+  def abi(reg_i: Int) = {
+    val _abi = Seq(
+      "zero",
+      "ra",
+      "sp",
+      "gp",
+      "tp",
+      "t0",
+      "t1",
+      "t2",
+      "s0",
+      "s1",
+      "a0",
+      "a1",
+      "a2",
+      "a3",
+      "a4",
+      "a5",
+      "a6",
+      "a7",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "s9",
+      "s10",
+      "s11",
+      "t3",
+      "t4",
+      "t5",
+      "t6"
+    )
+    if (reg_i < 0 || reg_i >= _abi.length) {
+      reg_i match {
+        case _ => "unknown"
+      }
+    } else {
+      _abi(reg_i)
+    }
+  }
 
   def csr_abi(csr_addr: Int): String = {
     csr_addr match {
