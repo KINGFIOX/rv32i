@@ -2,7 +2,9 @@ int fib(int n);
 
 int main()
 {
-    return fib(10);
+    int ret = fib(10);
+    asm volatile("ecall");
+    return ret;
 }
 
 int fib(int n)
