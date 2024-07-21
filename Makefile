@@ -8,11 +8,11 @@ bin: fib.c
 
 dump: bin
 	riscv32-unknown-linux-gnu-objdump -d fib > fib.dump
+	riscv32-unknown-linux-gnu-objdump -d trap_handle > trap_handle.dump
 
-gdb:
-	riscv32-unknown-linux-gnu-gcc -march=rv32i fib.s
-	riscv32-unknown-linux-gnu-gdb a.out 
-
+trap: fib.c
+	riscv32-unknown-linux-gnu-gcc -Wl,-Ttext=0x0 -nostdlib -march=rv32i -o trap_handle trap_handle.s
+	riscv32-unknown-linux-gnu-objcopy -O binary trap_handle trap_handle.bin
 
 clean:
 	rm -f fib
@@ -20,3 +20,5 @@ clean:
 	rm -f fib.s
 	rm -f fib.dump
 	rm -f a.out
+	rm -f trap_handle
+	rm -f trap_handle.bin

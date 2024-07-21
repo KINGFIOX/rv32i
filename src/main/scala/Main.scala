@@ -8,8 +8,11 @@ import scala.util.{Try, Using}
 
 object Settings {
   val DRAM_BEGIN: Int = 0 // 0x0_8000_0000
-  val DRAM_END: Int   = 0x0_0fff_f000
-  def DRAM_LEN        = DRAM_END - DRAM_BEGIN
+  val DRAM_LEN: Int   = (1 << 16)
+
+  val USER_BEGIN: Int = 0
+
+  val KERNEL_BEGIN: Int = 0x0_1c09_0000
 
   val DIG_BEGIN: Int = 0x0_ffff_f000 //
   val DIG_LEN: Int   = 4
@@ -26,16 +29,22 @@ object Settings {
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val fileName = if (args.length != 1) "meminit.bin" else args(0)
 
-    val code = readFile(fileName) match {
+    val user = readFile("meminit.bin") match {
       case Right(bytes) => bytes
       case Left(error) =>
         println(s"Error reading file: $error")
         return
     }
 
-    val cpu = new CPU(code)
+    val kernel = readFile("trap_handle.bin") match {
+      case Right(bytes) => bytes
+      case Left(error) =>
+        println(s"Error reading file: $error")
+        return
+    }
+
+    val cpu = new CPU(user, kernel)
 
     println(s"sp=${cpu.regs(2)}")
 

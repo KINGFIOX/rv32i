@@ -2,7 +2,7 @@ package rv32i
 
 import emu.Settings
 
-class CPU(irom: Array[Byte]) {
+class CPU(user: Array[Byte], kernel: Array[Byte]) {
 
   /* ---------- 属性 ---------- */
 
@@ -14,7 +14,9 @@ class CPU(irom: Array[Byte]) {
 
   regs(2) = Settings.DRAM_BEGIN + Settings.DRAM_LEN // 设置 sp 为栈顶(高地址)
 
-  val bus = new BUS(irom)
+  val bus = new BUS(user)
+
+  val irom = new IROM(user, Settings.USER_BEGIN, kernel, Settings.KERNEL_BEGIN)
 
   /* ---------- 方法 ---------- */
 
@@ -53,6 +55,15 @@ class CPU(irom: Array[Byte]) {
     "t6"
   )
 
+  def csr_abi(csr_addr: Int): String = {
+    csr_addr match {
+      case 0x300 => "mstatus"
+      case 0x341 => "mepc"
+      case 0x342 => "mcause"
+      case _ => java.lang.Integer.toHexString(csr_addr)
+    }
+  }
+
   // 打印所有寄存器的值
   def dumpRegisters(): Unit = {
     for (i <- 0 until 32 by 4) {
@@ -69,7 +80,7 @@ class CPU(irom: Array[Byte]) {
   }
 
   def fetch(): Int = {
-    bus.load(pc, 32)
+    irom.fetch(pc)
   }
 
   /** @param inst
@@ -78,11 +89,11 @@ class CPU(irom: Array[Byte]) {
     */
   def execute(inst: Int): Boolean = {
     val opcode = inst & 0x7f
-    val rd     = (inst >>> 7) & 0x1f
-    val rs1    = (inst >>> 15) & 0x1f
-    val rs2    = (inst >>> 20) & 0x1f
-    val funct3 = (inst >>> 12) & 0x7
-    val funct7 = (inst >>> 25) & 0x7f
+    val rd     = (inst >>> 7) & 0x0_1f
+    val rs1    = (inst >>> 15) & 0x0_1f
+    val rs2    = (inst >>> 20) & 0x0_1f
+    val funct3 = (inst >>> 12) & 0x0_7
+    val funct7 = (inst >>> 25) & 0x0_7f
 
     regs(0) = 0 // 开始前清 0
 
@@ -165,6 +176,51 @@ class CPU(irom: Array[Byte]) {
         regs(rd) = pc
         val imm = ((inst & 0x0_8000_0000) >> 11) | (inst & 0x0_f_f000) | ((inst >> 9) & 0x0_800) | ((inst >> 20) & 0x0_7fe)
         pc += imm - 4
+      case 0x73 => // 0b111_0011 -> system
+        val csr_addr = inst >>> 20
+        funct3 match {
+          case 0x0 =>
+            funct7 match {
+              case 0 => // ecall 或者是 uret
+                rs2 match {
+                  case 0 => // ecall
+                    csrs(0x341) = pc // mepc
+                    csrs(0x342) = 0x0000000b // mstatus
+                    pc          = Settings.KERNEL_BEGIN
+                  case 0x02 /* uret */ =>
+                    pc          = csrs(0x341) // mepc
+                    csrs(0x342) = 0 // 清空 mcause
+                }
+              case 0x18 /* mret */ | 0x08 /* sret */ =>
+                pc          = csrs(0x341) // mepc
+                csrs(0x342) = 0 // 清空 mcause
+            }
+          case 0x1 => // csrrw
+            val t = csrs(csr_addr)
+            csrs(csr_addr) = regs(rs1)
+            regs(rd)       = t
+          case 0x2 => // csrrs
+            val t = csrs(csr_addr)
+            csrs(csr_addr) = t | regs(rs1)
+            regs(rd)       = t
+          case 0x3 => // csrrc
+            val t = csrs(csr_addr)
+            csrs(csr_addr) = t & ~regs(rs1)
+            regs(rd)       = t
+          case 0x5 => // csrrwi
+            val t = csrs(csr_addr)
+            csrs(csr_addr) = rs1
+            regs(rd)       = t
+          case 0x6 => // csrrsi
+            val t = csrs(csr_addr)
+            csrs(csr_addr) = t | rs1
+            regs(rd)       = t
+          case 0x7 => // csrrci
+            val t = csrs(csr_addr)
+            csrs(csr_addr) = t & ~rs1
+            regs(rd)       = t
+          case _ => return false
+        }
       case _ =>
         return false
     }
@@ -263,8 +319,36 @@ class CPU(irom: Array[Byte]) {
         // val imm = (((inst >> 31) << 20) | ((inst >> 12) & 0xff) | ((inst >> 20) & 0x01) | ((inst >> 21) & 0x3ff))
         val imm = ((inst & 0x0_8000_0000) >> 11) | (inst & 0x0_f_f000) | ((inst >> 9) & 0x0_800) | ((inst >> 20) & 0x0_7fe)
         println(s"jal ${abi(rd)}, $imm")
+      case 0x73 => // 0b111_0011 -> system
+        val csr_addr = inst >>> 20
+        funct3 match {
+          case 0x0 =>
+            funct7 match {
+              case 0 => // ecall 或者是 uret
+                rs2 match {
+                  case 0 => // ecall
+                    println(s"ecall")
+                  case 0x02 /* uret */ =>
+                    println(s"eret")
+                }
+              case 0x18 /* mret */ | 0x08 /* sret */ =>
+                println(s"eret")
+            }
+          case 0x1 => // csrrw
+            println(s"csrrw ${abi(rd)}, ${csr_abi(csr_addr)} ,${abi(rs1)}")
+          case 0x2 => // csrrs
+            println(s"csrrs ${abi(rd)}, ${csr_abi(csr_addr)} ,${abi(rs1)}")
+          case 0x3 => // csrrc
+            println(s"csrrc ${abi(rd)}, ${csr_abi(csr_addr)} ,${abi(rs1)}")
+          case 0x5 => // csrrwi
+            println(s"csrrwi ${abi(rd)}, ${csr_abi(csr_addr)} ,${rs1}")
+          case 0x6 => // csrrsi
+            println(s"csrrsi ${abi(rd)}, ${csr_abi(csr_addr)} ,${rs1}")
+          case 0x7 => // csrrci
+            println(s"csrrci ${abi(rd)}, ${csr_abi(csr_addr)} ,${rs1}")
+          case _ => return false
+        }
       case _ =>
-        println(f"not implemented yet: opcode $opcode%#x")
         return false
     }
 
@@ -310,7 +394,7 @@ class CPU(irom: Array[Byte]) {
   def step(): (Boolean, (Boolean, String /* 写了哪个寄存器 */, Int /* 写的寄存器的值 */ )) = {
     println(s"========== ${java.lang.Integer.toHexString(pc)} ==========")
     val inst = fetch() // 1. 取指令
-    print_inst(inst)
+    if (!print_inst(inst)) println(f"not implemented yet: $inst%#x")
     if (inst == 0) return (false, (false, "", 0))
     pc += 4
     if (execute(inst) == false) return (false, (false, "", 0))
