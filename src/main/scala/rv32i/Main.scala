@@ -1,6 +1,4 @@
-package emu
-
-import rv32i.CPU
+package rv32i
 
 import java.io.{File, FileInputStream, IOException}
 import scala.io.Source
@@ -44,7 +42,7 @@ object Main {
         return
     }
 
-    val cpu = new CPU(user, kernel)
+    val cpu = new RVEMU(user, kernel)
 
     println(s"sp=${cpu.regs(2)}")
 

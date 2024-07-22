@@ -1,7 +1,5 @@
 package rv32i
 
-import emu.Settings
-
 class BUS(code: Array[Byte]) {
   val dram = new DRAM(code, Settings.DRAM_BEGIN, Settings.DRAM_LEN)
 

@@ -1,7 +1,5 @@
 package rv32i
 
-import scala.collection.immutable.BigVector
-
 class DRAM(code: Array[Byte], val DRAM_BEGIN: Int, val len: Int /* 大小 */ ) {
   val dram: Array[Byte] = Array.copyOf(code, len)
 
